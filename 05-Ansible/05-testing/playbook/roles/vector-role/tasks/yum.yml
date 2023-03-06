@@ -1,0 +1,12 @@
+---
+# tasks file for vector-role for EL family
+- name: Get vector distrib
+  ansible.builtin.get_url:
+    url: '{{ vector_url }}'
+    dest: './{{ vector_package }}'
+- name: Install vector packages
+  become: true
+  ansible.builtin.yum:
+    disable_gpg_check: true
+    name:
+      - '{{ vector_package }}'

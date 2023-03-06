@@ -1,0 +1,8 @@
+#cloud-config
+users:
+  - name: igor
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCpup7RBvQJLkXD1I00ngcYSCC34o13zHqRrwlLPHjbb3vAZPOyKn4WhxfwHQ9m4J28eRXBqGss5Yw2XT3WZh/Al5dovm5Q58EWQR8B1lfN3Oyk6FttoRcdfBz/cTxsYr9XwMr07oX0Lx8e3JhrWuSed3AX/JDeMGAb7MbqM+psr42s3R0DwFPwzuONxVX89TdxdMENTvHHUCT7SZwnXvOv90QpTC3326MQvhVK/uyIbQtIEC/LiTiH+b/K2r/EN2Habxq8Db4TX4fv1NKpS7ZkIAdoYY30HUziANTzsmcg4tclR14kDDa5MJ3Zh9Mr92Jorgy0vDoyjDgUMi3cp3+4eyw1PRVUhipzZhQK4N6ywTZiRbtx9dXz3lEBIRgK0+XLh7eQuw9cNrY7dks+viASiyvTbryklcREV0FlAWU0WWKmMAOjj2g2uAUM6ZCzhuFfkf9SoBVU8N9v9iAc23lY5SPtvHRF5XHFazfBX8CDFcJ0avZYPe0AKPMgoYbd/Xk= igor@MacBook-Air-Igor.local

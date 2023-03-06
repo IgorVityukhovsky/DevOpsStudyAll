@@ -1,0 +1,10 @@
+---
+# tasks file for vector-role for DEB family
+- name: Get vector distrib
+  ansible.builtin.get_url:
+    url: '{{ vector_url_apt }}'
+    dest: './{{ vector_package_apt }}'
+- name: Install vector packages
+  become: true
+  ansible.builtin.apt:
+    deb: '{{ vector_package_apt }}'

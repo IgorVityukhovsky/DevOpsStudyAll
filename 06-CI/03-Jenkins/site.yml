@@ -1,0 +1,5 @@
+---
+  - name: Install Java
+    hosts: localhost
+    roles:
+      - java

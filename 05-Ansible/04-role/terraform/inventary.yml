@@ -1,0 +1,12 @@
+---
+clickhouse:
+  hosts:
+    clickhouse_RHEL:
+      ansible_host: 84.201.135.96
+      ansible_ssh_user: igor
+    vector_RHEL:
+      ansible_host: 84.252.131.155
+      ansible_ssh_user: igor
+    lighthouse_UBUNTU:
+      ansible_host: 84.252.130.86
+      ansible_ssh_user: igor

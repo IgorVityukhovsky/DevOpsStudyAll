@@ -1,0 +1,77 @@
+---
+- name: Install Clickhouse
+  hosts: clickhouse_RHEL
+  handlers:
+    - name: Start clickhouse service
+      become: true
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+  tasks:
+    - block:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
+            dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
+          with_items: "{{ clickhouse_packages }}"
+      rescue:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
+    - name: Install clickhouse packages
+      become: true
+      ansible.builtin.yum:
+        disable_gpg_check: true
+        name:
+          - clickhouse-common-static-{{ clickhouse_version }}.rpm
+          - clickhouse-client-{{ clickhouse_version }}.rpm
+          - clickhouse-server-{{ clickhouse_version }}.rpm
+      notify: Start clickhouse service
+    - name: Flush handlers
+      meta: flush_handlers
+    - name: Pause for 2 seconds to restart service
+      ansible.builtin.pause:
+        seconds: 2
+    - name: Create database
+      ansible.builtin.command: "clickhouse-client -q 'create database logs;'"
+      register: create_db
+      failed_when: create_db.rc != 0 and create_db.rc !=82
+      changed_when: create_db.rc == 0
+    
+- name: Install Vector
+  hosts: vector_RHEL
+  tasks:
+    - name: Get vector distrib
+      ansible.builtin.get_url:
+        url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm"
+        dest: "./vector-{{ vector_version }}.rpm"
+    - name: Install vector packages
+      become: true
+      ansible.builtin.yum:
+        disable_gpg_check: true
+        name:
+          - vector-{{ vector_version }}.rpm
+    
+- name: Install Lighthouse
+  hosts: lighthouse_UBUNTU
+  tasks:
+    - name: Update apt-get repo and cache
+      become: true
+      apt: update_cache=yes force_apt_get=yes
+
+    - name: Install nginx
+      become: true
+      ansible.builtin.apt:
+        name: nginx
+
+    - name: Clone a github repository
+      git:
+        repo: https://github.com/VKCOM/lighthouse.git
+        dest: ./git
+        clone: yes
+        update: yes
+    
+    - name: copy files
+      become: true
+      command: cp ./git/. /var/www/html/ -r

@@ -1,0 +1,12 @@
+---
+clickhouse:
+  hosts:
+    clickhouse_RHEL:
+      ansible_host: 34.238.116.128
+      ansible_ssh_user: ec2-user
+    vector_RHEL:
+      ansible_host: 44.204.184.14
+      ansible_ssh_user: ec2-user
+    lighthouse_UBUNTU:
+      ansible_host: 54.89.212.35
+      ansible_ssh_user: ubuntu
