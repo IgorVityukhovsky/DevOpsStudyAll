@@ -15,6 +15,13 @@ https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/02-Virtualization/0
 
 Докер-файл, качает образ, настраивает окружение, пайтон, ансибл
 
+https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/03-DataBase/05-Elasticsearch.md
+
+Докер-компос, основа эластиксёрч, преднастраивает, данные хранит по определённому пути, задаёт имя ноды
+
+https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/03-DataBase/05-Elasticsearch.md
+
+
 # Docker-swarm
 
 **replication** означает, что у сервиса будет работать определённое количество копий (реплик), тогда как в режиме **global** сервисы будут работать на всех нодах  
