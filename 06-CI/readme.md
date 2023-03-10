@@ -12,5 +12,17 @@ SonarQube — платформа для непрерывного анализа 
 
 **Nexus**  
 
+**Maven**  
 
-**Maven**
+### 03-Jenkins  
+
+Пайплайн берёт ансибл плейбук с форка репозитория и раскатывает его на облачные машины
+
+Jenkinsfile  
+Freestyle Job  
+ScriptedJenkinsfile  
+
+### 05-GitLab  
+
+Побыть участником всего процесса
+DevOps
