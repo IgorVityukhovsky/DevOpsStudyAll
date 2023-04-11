@@ -1,4 +1,4 @@
-# `Git branch`  
+`Git branch`  
 Создание новой ветки  
 # Git checkout
 Переключиться (т.е. сместить указатель HEAD)  
