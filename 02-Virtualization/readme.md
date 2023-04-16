@@ -20,7 +20,7 @@
 - Обновляет все пакеты
 - Удаляет лишние временные директории кешей
 - Создаёт хост файл для ансибла прописывая туда локалхост
-```
+```Dockerfile
 FROM alpine:3.14
 RUN CARGO_NET_GIT_FETCH_WITH_CLI=1 && \
  apk --no-cache add \
@@ -45,14 +45,14 @@ CMD [ "ansible-playbook", "--version" ]
 ```
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/02-Virtualization/03-Docker.MD  
 
-# Докер для эластиксёрч. Сделано в docker-compose и в docekrfile
+## Докер для эластиксёрч. Сделано в docker-compose и в docekrfile
 - основа эластиксёрч
 - устанавливает лимиты на количество открытых файловых дескрипторов
 - преднастраивает переменные среды
 - данные хранит по определённому пути
 - задаёт имя ноды  
 - функционально добавляется конфиг эластиксёрч и подмапливается волюмом
-```dockercompose
+```yml
 version: '3.8'
 services:
   elasticsearch:
@@ -120,7 +120,7 @@ Python версии не ниже 3.7
 Точка вызова: запуск скрипта  
 Если сборка происходит на ветке master: Образ должен пушится в docker registry вашего gitlab python-api:latest, иначе этот шаг нужно пропустить  
 
-```
+```Dockerfile
 FROM centos:7
 RUN yum install python3 python3-pip -y
 RUN mkdir /python_api
@@ -133,53 +133,45 @@ CMD ["python3", "/python_api/python-api.py"]
 
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/tree/main/06-CI/05-GitLab#readme  
 
-# Dockerfile для приложения на Node.js:  
+## Dockerfile для приложения на Node.js:  
 
 Используется базовый образ Node.js  
 Копируется файл package.json и запускается команда npm install для установки зависимостей  
 Копируются файлы приложения  
 Запускается команда npm start для запуска приложения  
-```
+
+```Dockerfile
 FROM node:latest
-
 WORKDIR /app
-
 COPY package.json package-lock.json /app/
-
 RUN npm install
-
 COPY . /app/
-
 CMD ["npm", "start"]
 
 ```
-# Dockerfile для веб-приложения на Python с использованием фреймворка Flask:  
+## Dockerfile для веб-приложения на Python с использованием фреймворка Flask:  
 
 Используется базовый образ Python  
 Копируются файлы приложения  
 Устанавливается фреймворк Flask  
 Открывается порт 5000, на котором будет работать приложение  
 Запускается команда python app.py для запуска приложения  
-```
+
+```Dockerfile
 FROM python:latest
-
 WORKDIR /app
-
 COPY . /app
-
 RUN pip install -r requirements.txt
-
 EXPOSE 5000
-
 CMD ["python", "app.py"]
 ```
-# Dockerfile для базы данных MySQL:  
+## Dockerfile для базы данных MySQL:  
 
 Используется базовый образ MySQL  
 Копируется файл конфигурации базы данных  
 Создается новый пользователь и база данных  
 Открываются порты 3306 и 33060 для доступа к базе данных  
-```
+```Dockerfile
 FROM mysql:latest
 
 COPY my.cnf /etc/mysql/conf.d/my.cnf
@@ -194,13 +186,13 @@ EXPOSE 3306 33060
 CMD ["mysqld"]
 ```
 
-# Dockerfile для сервера Nginx:  
+## Dockerfile для сервера Nginx:  
 
 Используется базовый образ Nginx  
 Копируется файл конфигурации Nginx  
 Копируются файлы сайта  
 Открывается порт 80, на котором будет работать сервер  
-```
+```Dockerfile
 FROM nginx:latest
 
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -212,14 +204,14 @@ CMD ["nginx", "-g", "daemon off;"]
 ```
 Используем директиву CMD, чтобы запустить Nginx-сервер командой nginx с флагом -g "daemon off;", чтобы сервер не запускался в фоновом режиме и не завершал работу контейнера.
 
-# Dockerfile для микросервиса на Java с использованием Spring Boot:  
+## Dockerfile для микросервиса на Java с использованием Spring Boot:  
 
 Используется базовый образ Java  
 Копируются файлы приложения  
 Устанавливается фреймворк Spring Boot  
 Запускается приложение командой java -jar app.jar  
 
-```
+```Dockerfile
 FROM openjdk:latest
 
 COPY app.jar /app.jar
@@ -229,7 +221,7 @@ EXPOSE 8080
 CMD ["java", "-jar", "/app.jar"]
 ```
 
-# Dockerfile для развертывания полноценного web-приложения на базе Node.js, MongoDB, Nginx и React, который имеет следующий функционал:  
+## Dockerfile для развертывания полноценного web-приложения на базе Node.js, MongoDB, Nginx и React, который имеет следующий функционал:  
 
 Используется базовый образ Node.js  
 Устанавливается MongoDB  
@@ -237,7 +229,7 @@ CMD ["java", "-jar", "/app.jar"]
 Устанавливается и настраивается Nginx для использования в качестве прокси-сервера  
 Устанавливается и настраивается React для фронтенда  
 Запускается сервер Node.js, взаимодействующий с MongoDB  
-```
+```Dockerfile
 # Установка Node.js
 FROM node:latest
 
@@ -266,8 +258,8 @@ COPY server.js /server.js
 EXPOSE 3000
 CMD ["node", "/server.js"]
 ```
-# Cоздать Docker-контейнер, в котором будет запущено полноценное веб-приложение на Python с использованием фреймворка Django, базы данных PostgreSQL и прокси-сервера Nginx для обслуживания HTTP-запросов.  
-```
+## Cоздать Docker-контейнер, в котором будет запущено полноценное веб-приложение на Python с использованием фреймворка Django, базы данных PostgreSQL и прокси-сервера Nginx для обслуживания HTTP-запросов.  
+```Dockerfile
 # базовый образ Python
 FROM python:3.8-slim-buster
 
