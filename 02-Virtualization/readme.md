@@ -30,10 +30,10 @@ https://github.com/IgorVityukhovsky/DevOpsStudyAll/tree/main/06-CI/05-GitLab#rea
 
 # Dockerfile для приложения на Node.js:  
 
-Используется базовый образ Node.js
-Копируется файл package.json и запускается команда npm install для установки зависимостей
-Копируются файлы приложения
-Запускается команда npm start для запуска приложения      
+Используется базовый образ Node.js  
+Копируется файл package.json и запускается команда npm install для установки зависимостей  
+Копируются файлы приложения  
+Запускается команда npm start для запуска приложения  
 ```
 FROM node:latest
 
