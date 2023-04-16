@@ -26,7 +26,28 @@ Python версии не ниже 3.7
 Точка вызова: запуск скрипта  
 Если сборка происходит на ветке master: Образ должен пушится в docker registry вашего gitlab python-api:latest, иначе этот шаг нужно пропустить  
 
-https://github.com/IgorVityukhovsky/DevOpsStudyAll/tree/main/06-CI/05-GitLab#readme
+https://github.com/IgorVityukhovsky/DevOpsStudyAll/tree/main/06-CI/05-GitLab#readme  
+
+# Dockerfile для приложения на Node.js:  
+
+Используется базовый образ Node.js
+Копируется файл package.json и запускается команда npm install для установки зависимостей
+Копируются файлы приложения
+Запускается команда npm start для запуска приложения      
+```
+FROM node:latest
+
+WORKDIR /app
+
+COPY package.json package-lock.json /app/
+
+RUN npm install
+
+COPY . /app/
+
+CMD ["npm", "start"]
+
+```
 
 
 # Docker-swarm
