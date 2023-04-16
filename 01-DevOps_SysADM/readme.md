@@ -12,8 +12,6 @@
 `Git remote -v` проверить ссылки на удалённые репозитории  
 `Git push --set-upstream origin main` Связать локальную ветку с удалённой, что бы писать `git push` вместо `git push origin main`  
 `Git push --tags` отправить теги (по умолчанию не отправляются)  
-
-
 `Git branch`  Создание новой ветки  
 `Git branch -a`  Посмотреть ветки  
 `Git branch -D bugfix`  Удалить ветку  
