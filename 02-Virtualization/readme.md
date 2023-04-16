@@ -52,7 +52,7 @@ https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/02-Virtualization/0
 - данные хранит по определённому пути
 - задаёт имя ноды  
 - функционально добавляется конфиг эластиксёрч и подмапливается волюмом
-```docker-compose
+```dockercompose
 version: '3.8'
 services:
   elasticsearch:
