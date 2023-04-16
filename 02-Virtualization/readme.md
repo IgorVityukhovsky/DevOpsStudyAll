@@ -129,6 +129,58 @@ CMD ["python3", "/python_api/python-api.py"]
 ```
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/tree/main/06-CI/05-GitLab#readme  
 
+## Docker-compose и Dockerfile поднимите инстанс PostgreSQL (версию 12) c 2 volume, в который будут складываться данные БД и бэкапы.  
+- Берётся образ postgres:12
+- Создаются волюмы
+- Копируется скрипт создания базы данных
+- Открываются порты
+
+
+```yml
+version: '3.8'
+services:
+  mydb:
+    image: postgres:12
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - db-backup:/var/lib/postgresql/backup
+      - /home/igor/HomeWorkSQL/Script:/docker-entrypoint-initdb.d #Из директории с таким названием скрипты будут выполняться автоматически 1 раз при старте контейнера. Но в нашем случае этого не произойдёт, так как скрипт написан для постгресса и запускать надо через него. Скрипт создаёт базы.
+    ports:
+      - "5432:5432"
+    environment:
+      PGDATA: /var/lib/postgresql/data/
+      POSTGRES_PASSWORD: example
+
+
+volumes:
+  db-data:
+  db-backup:
+networks:
+  postgresnetwork000:
+    driver: 'local'
+```
+```dockerfile
+FROM postgres:12
+
+# Установка переменных среды
+ENV PGDATA /var/lib/postgresql/data/
+ENV POSTGRES_PASSWORD example
+
+# Копирование скриптов в контейнер
+COPY /home/igor/HomeWorkSQL/Script /docker-entrypoint-initdb.d
+
+# Создание точки монтирования
+VOLUME ["/var/lib/postgresql/data", "/var/lib/postgresql/backup"]
+
+# Открытие порта 5432
+EXPOSE 5432
+
+# Запуск PostgreSQL при старте контейнера
+CMD ["postgres"]
+```
+https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/03-DataBase/02-SQL.md
+
+
 ## Dockerfile для приложения на Node.js:  
 
 - Используется базовый образ Node.js  
