@@ -45,13 +45,14 @@ CMD [ "ansible-playbook", "--version" ]
 ```
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/02-Virtualization/03-Docker.MD  
 
-# Докер компос для эластиксёрч
+# Докер для эластиксёрч. Сделано в docker-compose и в docekrfile
 - основа эластиксёрч
+- устанавливает лимиты на количество открытых файловых дескрипторов
 - преднастраивает переменные среды
 - данные хранит по определённому пути
 - задаёт имя ноды  
 - функционально добавляется конфиг эластиксёрч и подмапливается волюмом
-```
+```docker-compose
 version: '3.8'
 services:
   elasticsearch:
@@ -86,8 +87,30 @@ networks:
   elasticsearch:
     driver: 'local'
 ```
+```dockerfile
+FROM elasticsearch:7.17.6
+
+RUN ulimit -n 262144
+
+ENV discovery.type=single-node
+ENV node.name=netology_test
+ENV path.data=/var/lib
+ENV path.repo=/usr/share/elasticsearch/snapshots
+ENV ES_JAVA_OPTS=-Xms3g -Xmx3g
+ENV ES_HEAP_SIZE=4g
+
+ENTRYPOINT ["/bin/bash", "-c", "chmod 777 /var/lib && /bin/tini \"/usr/local/bin/docker-entrypoint.sh eswrapper\""]
+
+EXPOSE 9200 9300
+
+CMD ["elasticsearch"]
+```
+
+
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/03-DataBase/05-Elasticsearch.md  
 
+
+## Dockerfile для докера с пайтон скриптом  
 
 Образ собирается на основе centos:7  
 Python версии не ниже 3.7  
@@ -96,6 +119,17 @@ Python версии не ниже 3.7
 Скрипт из репозитория размещён в /python_api  
 Точка вызова: запуск скрипта  
 Если сборка происходит на ветке master: Образ должен пушится в docker registry вашего gitlab python-api:latest, иначе этот шаг нужно пропустить  
+
+```
+FROM centos:7
+RUN yum install python3 python3-pip -y
+RUN mkdir /python_api
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+COPY python-api.py /python_api/python-api.py
+CMD ["python3", "/python_api/python-api.py"]
+```
+
 
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/tree/main/06-CI/05-GitLab#readme  
 
