@@ -45,7 +45,47 @@ CMD [ "ansible-playbook", "--version" ]
 ```
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/02-Virtualization/03-Docker.MD  
 
-Докер-компос, основа эластиксёрч, преднастраивает, данные хранит по определённому пути, задаёт имя ноды  
+# Докер компос для эластиксёрч
+- основа эластиксёрч
+- преднастраивает переменные среды
+- данные хранит по определённому пути
+- задаёт имя ноды  
+- функционально добавляется конфиг эластиксёрч и подмапливается волюмом
+```
+version: '3.8'
+services:
+  elasticsearch:
+    image: elasticsearch:7.17.6   #Не было тага 7, использовал 7.17.6
+    container_name: es
+    tty: true
+    stdin_open: true
+    ulimits:
+     nofile:
+      soft: 262144
+      hard: 262144
+
+    entrypoint: /bin/bash -c "chmod 777 /var/lib && /bin/tini "/usr/local/bin/docker-entrypoint.sh eswrapper""
+
+    #Команда, которая выполнится при запуске контейнера, задаёт необходимые права на нужную нам директорию
+    #Если оставить только команду на назначение прав, контейнер будет считать её основной и после её завершения завершится и контейнер
+    #Что бы этого избежать, добавил в команду запуск процесса elasticsearch так как именно он нам и нужен как основной
+    #Команда взята из столбца COMMAND при запуске дефолтного контейнера
+    #Так же накидывает нужные права на папку из задачи 3
+    
+
+    environment:
+      - discovery.type=single-node                     #Необходимо для работы одной ноды
+      - node.name=netology_test                        #Задаём имя ноды
+      - path.data=/var/lib                             #Задаём путь для хранения данных
+      - path.repo=/usr/share/elasticsearch/snapshots   #Задаём путь для репозитория снапшотов для задачи 3
+      #- xpack.security.enabled=true
+      - "ES_JAVA_OPTS=-Xms3g -Xmx3g"
+      - "ES_HEAP_SIZE=4g"
+
+networks:
+  elasticsearch:
+    driver: 'local'
+```
 https://github.com/IgorVityukhovsky/DevOpsStudyAll/blob/main/03-DataBase/05-Elasticsearch.md  
 
 
