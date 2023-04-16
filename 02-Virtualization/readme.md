@@ -239,7 +239,10 @@ COPY server.js /server.js
 EXPOSE 3000
 CMD ["node", "/server.js"]
 ```
-## Cоздать Docker-контейнер, в котором будет запущено полноценное веб-приложение на Python с использованием фреймворка Django, базы данных PostgreSQL и прокси-сервера Nginx для обслуживания HTTP-запросов.  
+## Dockerfile в котором:  
+- будет запущено полноценное веб-приложение на Python с использованием фреймворка Django
+- базы данных PostgreSQL
+- прокси-сервера Nginx для обслуживания HTTP-запросов.  
 ```Dockerfile
 # базовый образ Python
 FROM python:3.8-slim-buster
