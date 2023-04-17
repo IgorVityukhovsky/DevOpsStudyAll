@@ -1,4 +1,4 @@
-### 01-intro  
+## 01-intro  
 
 **Jira**  
 **Agile** - гибкая методология, точнее семейство. Входят kanban и scrum  
@@ -9,7 +9,7 @@
 **Agile** (гибкая методология) — это когда мы не пытаемся заглядывать далеко вперед, а двигаемся итеративно (циклами) и инкрементально (имея промежуточные результаты). За счет такого подхода мы можем быстрее и чаще получать обратную связь, и корректировать движение.  
 
 
-### 02-cicd  
+## 02-cicd  
 
 **SonarQube**  
 Платформа для непрерывного анализа и измерения качества кода. Анализирует баги, синтаксические ошибки, выводит предупреждения  
@@ -21,13 +21,16 @@
 **Maven**  
 Сборщик Java приложений  
 
-### 03-Jenkins  
+## 03-Jenkins  
 
 Jenkinsfile  
 Freestyle Job  
 ScriptedJenkinsfile  
 
-Пайплайн берёт ансибл плейбук с форка репозитория и раскатывает его на облачные машины  
+
+### Jenkinsfile  
+Пайплайн берёт ансибл плейбук с репозитория и раскатывает его на облачные машины  
+
 ```yml
 pipeline {
     agent any
@@ -43,8 +46,110 @@ pipeline {
 }
 ```
 
+### Jenkinsfile
+Скачивает репозиторий из Git  
+Собирает Docker-образ с помощью Dockerfile  
+Запускает контейнер Docker, который использует собранный образ  
+Устанавливает зависимости Python, указанные в requirements.txt  
+Выполняет тесты Python с помощью Pytest  
+```
+pipeline {
+    agent any
+    stages {
+        stage('Clone repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/user/repo.git'
+            }
+        }
+        stage('Build Docker image') {
+            steps {
+                sh 'docker build -t my-image:${BUILD_NUMBER} -f Dockerfile .'
+            }
+        }
+        stage('Run Docker container') {
+            steps {
+                sh 'docker run -d -p 8000:8000 --name my-container my-image:${BUILD_NUMBER}'
+            }
+        }
+        stage('Install Python dependencies') {
+            steps {
+                sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Run tests') {
+            steps {
+                sh 'pytest'
+            }
+        }
+    }
+    post {
+        always {
+            sh 'docker stop my-container && docker rm my-container'
+        }
+    }
+}
+```
+### Jenkinsfile  
+Скачивает репозиторий с GitHub.  
+Запускает Terraform для создания виртуальной машины.  
+Копирует файлы из репозитория на созданную виртуальную машину.  
+Рестартует на удаленной машине Nginx.  
+```
+pipeline {
+    agent any
+    environment {
+        // Устанавливаем переменные окружения
+        VM_IP = '123.45.67.89'
+        VM_USER = 'ubuntu'
+    }
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Клонируем репозиторий из GitHub
+                git 'https://github.com/user/repo.git'
+            }
+        }
 
-### 05-GitLab  
+        stage('Terraform Apply') {
+            steps {
+                // Устанавливаем Terraform и запускаем манифест
+                sh '''
+                    wget https://releases.hashicorp.com/terraform/1.0.9/terraform_1.0.9_linux_amd64.zip
+                    unzip terraform_1.0.9_linux_amd64.zip
+                    sudo mv terraform /usr/local/bin/
+                    cd terraform
+                    terraform init
+                    terraform apply -auto-approve
+                '''
+            }
+        }
+
+        stage('Copy files to VM') {
+            steps {
+                // Копируем файлы на виртуальную машину
+                sh '''
+                    ssh-keyscan -H ${VM_IP} >> ~/.ssh/known_hosts
+                    scp -i ~/.ssh/id_rsa -r ./path/to/files ${VM_USER}@${VM_IP}:/home/${VM_USER}/
+                '''
+            }
+        }
+
+        stage('Restart Nginx') {
+            steps {
+                // Рестартуем Nginx на виртуальной машине
+                sh '''
+                    ssh -i ~/.ssh/id_rsa ${VM_USER}@${VM_IP} 'sudo systemctl restart nginx'
+                '''
+            }
+        }
+    }
+}
+```
+
+
+
+
+## 05-GitLab  
 
 Побыть участником всего процесса  
 
