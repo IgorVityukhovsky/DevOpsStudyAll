@@ -23,11 +23,26 @@
 
 ### 03-Jenkins  
 
-Пайплайн берёт ансибл плейбук с форка репозитория и раскатывает его на облачные машины
-
 Jenkinsfile  
 Freestyle Job  
 ScriptedJenkinsfile  
+
+Пайплайн берёт ансибл плейбук с форка репозитория и раскатывает его на облачные машины  
+```yml
+pipeline {
+    agent any
+
+    stages {
+        stage('Git') {
+            steps {
+                sh 'git clone https://github.com/IgorVityukhovsky/example-playbook.git && cd example-playbook && ansible-playbook site.yml -e "ansible_become_password=123"'
+            }
+        }
+        
+    }
+}
+```
+
 
 ### 05-GitLab  
 
