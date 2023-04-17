@@ -166,4 +166,136 @@ pipeline {
 Протестировать изменения в контейнере  
 
 
+### GitLab CI/CD  
+
+- Cоздает Docker-образ приложения, используя Dockerfile, который расположен в репозитории.  
+- Этап "test" выполняет тестирование приложения, используя NPM.  
+- Этап "package" упаковывает Docker-образ в TAR-архив.  
+- Наконец, этап "deploy" доставляет TAR-архив на удаленный сервер и запускает Docker-контейнер приложения.  
+```yml
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+variables:
+  APP_NAME: myapp
+  DOCKER_IMAGE_NAME: myapp/docker-image
+
+build:
+  stage: build
+  image: docker:latest
+  script:
+    - docker build -t $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA .
+
+test:
+  stage: test
+  image: node:latest
+  script:
+    - npm install
+    - npm run test
+
+package:
+  stage: package
+  image: docker:latest
+  script:
+    - docker tag $DOCKER_IMAGE_NAME:$CI_COMMIT_SHA $DOCKER_IMAGE_NAME:latest
+    - docker save -o $APP_NAME.tar $DOCKER_IMAGE_NAME:latest
+
+deploy:
+  stage: deploy
+  image: docker:latest
+  script:
+    - ssh user@server "mkdir -p /opt/$APP_NAME"
+    - scp $APP_NAME.tar user@server:/opt/$APP_NAME/
+    - ssh user@server "docker load -i /opt/$APP_NAME/$APP_NAME.tar"
+    - ssh user@server "docker stop $APP_NAME || true"
+    - ssh user@server "docker rm $APP_NAME || true"
+    - ssh user@server "docker run -d --name $APP_NAME -p 80:80 $DOCKER_IMAGE_NAME:latest"
+```
+
+### Gitlab CI/CD  
+- Cоздаётся Docker-образ приложения и сохраняется в Docker hub  
+- Затем создаётся Docker-образ, используемый для запуска юниттестов  
+- На этапе тестирования запускаются тесты  
+- На этапе развертывания приложение разворачивается в Kubernetes-кластере  
+```yml
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+.build-image:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/app .
+    - docker push $CI_REGISTRY_IMAGE/app
+
+.build-artifacts:
+  stage: build
+  extends: .build-image
+  script:
+    - npm install
+    - npm run build
+    - mv build artifacts/
+
+.test-image:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/test .
+    - docker push $CI_REGISTRY_IMAGE/test
+
+.test-unit:
+  stage: test
+  extends: .test-image
+  script:
+    - npm install
+    - npm run test:unit
+
+.test-e2e:
+  stage: test
+  extends: .test-image
+  script:
+    - npm install
+    - npm run test:e2e
+
+.deploy-image:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME .
+    - docker push $CI_REGISTRY_IMAGE/app:$CI_COMMIT_REF_NAME
+    - kubectl config set-context $KUBE_CONTEXT
+    - kubectl config use-context $KUBE_CONTEXT
+    - kubectl apply -f kubernetes/deployment.yaml
+
+.deploy:
+  stage: deploy
+  environment:
+    name: production
+  script:
+    - kubectl config set-context $KUBE_CONTEXT
+    - kubectl config use-context $KUBE_CONTEXT
+    - kubectl apply -f kubernetes/service.yaml
+
+```
+
+
+
 Добавить тимсити
